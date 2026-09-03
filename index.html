@@ -33,7 +33,6 @@
       padding: 2rem;
     }
 
-    /* Interactive Background Canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -241,7 +240,7 @@
     <div class="header">
       <h1>Student All-in-One Hub</h1>
       <p>Quick access to all Sairam academic & learning portals</p>
-      <input type="text" id="searchInput" class="search-box" placeholder="Search platforms..." onkeyup="filterCards()">
+      <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder="Search platforms..." onkeyup="filterCards()">
     </div>
 
     <div class="grid" id="portalGrid">
@@ -266,6 +265,42 @@
           </div>
           <h3>SEC Main Site</h3>
           <p>Official Sri Sairam Engineering College institutional portal and updates.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
+
+      <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
+        <div>
+          <div class="card-top">
+            <span class="tag">Academics</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Sairam PGPA">
+          </div>
+          <h3>Sairam PGPA Portal</h3>
+          <p>Official Sairam Grievance Redressal Portal for student and parent institutional feedback.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
+
+      <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
+        <div>
+          <div class="card-top">
+            <span class="tag">AI Tools</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL AI">
+          </div>
+          <h3>SAIL AI Learning (Student)</h3>
+          <p>Sairam AI-driven personalized learning platform for assessments and analytics.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
+
+      <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
+        <div>
+          <div class="card-top">
+            <span class="tag">AI Tools</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL Mentor">
+          </div>
+          <h3>SAIL AI Learning (Mentor)</h3>
+          <p>Faculty portal for AI-powered student coaching and curriculum management.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
@@ -330,18 +365,6 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://chat.openai.com" target="_blank" class="card" data-title="AI Powered Learning chatgpt artificial intelligence">
-        <div>
-          <div class="card-top">
-            <span class="tag">AI Tools</span>
-            <img src="https://www.google.com/s2/favicons?domain=openai.com&sz=64" class="card-icon" alt="AI">
-          </div>
-          <h3>AI Powered Learning</h3>
-          <p>Interactive AI workspace for research, code debugging, and concept clarification.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
-
       <a href="https://accounts.digitallocker.gov.in/" target="_blank" class="card" data-title="DigiLocker Government Digital Documents">
         <div>
           <div class="card-top">
@@ -354,7 +377,7 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://mybharat.gov.in" target="_blank" class="card" data-title="Home MYBharat youth portal">
+      <a href="https://mybharat.gov.in" target="_blank" class="card" data-title="Home MYBharat youth portal my bharath">
         <div>
           <div class="card-top">
             <span class="tag">Government</span>
@@ -366,7 +389,7 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://www.mygov.in" target="_blank" class="card" data-title="MyGov.in Citizen Engagement Governance">
+      <a href="https://www.mygov.in" target="_blank" class="card" data-title="MyGov.in Citizen Engagement Governance my government">
         <div>
           <div class="card-top">
             <span class="tag">Government</span>
@@ -388,22 +411,19 @@
   </footer>
 
   <script>
-    /* Search Filter Function */
     function filterCards() {
-      const input = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.getElementsByClassName('card');
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
 
-      Array.from(cards).forEach(card => {
-        const title = card.getAttribute('data-title').toLowerCase();
-        if (title.includes(input)) {
-          card.style.display = "flex";
-        } else {
-          card.style.display = "none";
-        }
+      cards.forEach(card => {
+        const textContent = card.innerText.toLowerCase();
+        const dataTitle = (card.getAttribute('data-title') || '').toLowerCase();
+        
+        const isVisible = dataTitle.includes(query) || textContent.includes(query);
+        card.style.display = isVisible ? "flex" : "none";
       });
     }
 
-    /* Interactive 3D Card Tilt on Mouse Move */
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
@@ -417,12 +437,10 @@
       });
     });
 
-    /* Interactive Background & Particle Physics Engine */
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
 
     let particles = [];
-    const particleCount = 80;
     const maxDistance = 140;
 
     let mouse = { x: null, y: null, radius: 200 };
@@ -440,17 +458,15 @@
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      initParticles();
     }
 
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     class Particle {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.baseX = this.x;
-        this.baseY = this.y;
         this.vx = (Math.random() - 0.5) * 1.2;
         this.vy = (Math.random() - 0.5) * 1.2;
         this.radius = Math.random() * 2 + 1;
@@ -491,64 +507,66 @@
 
     function initParticles() {
       particles = [];
+      const particleCount = window.innerWidth < 768 ? 35 : 80;
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
     }
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      if (mouse.x !== null && mouse.y !== null) {
-        let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
-        glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
-        glow.addColorStop(0.5, 'rgba(56, 189, 248, 0.05)');
-        glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, mouse.radius * 1.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
-        particles[i].draw();
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < maxDistance) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / maxDistance * 0.8})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-        }
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (mouse.x !== null && mouse.y !== null) {
-          const mDx = particles[i].x - mouse.x;
-          const mDy = particles[i].y - mouse.y;
-          const mDist = Math.sqrt(mDx * mDx + mDy * mDy);
+          let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
+          glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
+          glow.addColorStop(0.5, 'rgba(56, 189, 248, 0.05)');
+          glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, mouse.radius * 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-          if (mDist < mouse.radius) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - mDist / mouse.radius) * 0.9})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < maxDistance) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / maxDistance * 0.8})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+
+          if (mouse.x !== null && mouse.y !== null) {
+            const mDx = particles[i].x - mouse.x;
+            const mDy = particles[i].y - mouse.y;
+            const mDist = Math.sqrt(mDx * mDx + mDy * mDy);
+
+            if (mDist < mouse.radius) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - mDist / mouse.radius) * 0.9})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
           }
         }
       }
-
       requestAnimationFrame(animate);
     }
 
-    initParticles();
+    resizeCanvas();
     animate();
   </script>
 </body>
