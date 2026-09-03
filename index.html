@@ -216,6 +216,16 @@
       border-radius: 30px;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .developer-badge:hover, .developer-badge:active {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+      transform: translateY(-2px);
     }
 
     .developer-badge strong {
@@ -372,9 +382,9 @@
   </div>
 
   <footer class="footer">
-    <div class="developer-badge">
-      Developed by <strong>Balaji P</strong> | Cyber Security Student
-    </div>
+    <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-badge">
+      Developed by <strong>BALAJI P</strong> | Cybersecurity Student Portfolio
+    </a>
   </footer>
 
   <script>
@@ -453,7 +463,6 @@
         if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
         if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
 
-        // Dynamic Particle Repulsion from Mouse
         if (mouse.x !== null && mouse.y !== null) {
           let dx = mouse.x - this.x;
           let dy = mouse.y - this.y;
@@ -490,7 +499,6 @@
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw Cursor Radial Glow Spotlight
       if (mouse.x !== null && mouse.y !== null) {
         let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
         glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
@@ -506,7 +514,6 @@
         particles[i].update();
         particles[i].draw();
 
-        // Connect particles with network lines
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
@@ -522,7 +529,6 @@
           }
         }
 
-        // Draw dynamic beam connecting particles to cursor
         if (mouse.x !== null && mouse.y !== null) {
           const mDx = particles[i].x - mouse.x;
           const mDy = particles[i].y - mouse.y;
