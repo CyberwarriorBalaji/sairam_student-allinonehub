@@ -1,573 +1,578 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sairam Student Portal Hub</title>
-  <style>
-    :root {
-      --bg-dark: #090d16;
-      --card-bg: rgba(22, 32, 51, 0.65);
-      --card-border: rgba(56, 189, 248, 0.2);
-      --card-border-hover: rgba(56, 189, 248, 0.8);
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
-      --text: #f8fafc;
-      --text-sub: #94a3b8;
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sairam Student Portal Hub</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <link rel="apple-touch-icon" sizes="180x180" href="https://sairam.edu.in/wp-content/uploads/2018/03/sec-logo.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://sairam.edu.in/wp-content/uploads/2018/03/sec-logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64">
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      padding: 2rem;
-    }
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: rgba(22, 32, 51, 0.65);
+      --card-border: rgba(56, 189, 248, 0.2);
+      --card-border-hover: rgba(56, 189, 248, 0.8);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.3);
+      --text: #f8fafc;
+      --text-sub: #94a3b8;
+    }
 
-    #bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      pointer-events: none;
-    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    .container {
-      max-width: 1150px;
-      margin: 0 auto;
-      width: 100%;
-      flex: 1;
-    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding: 2rem;
+    }
 
-    .header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
 
-    .header h1 {
-      font-size: 2.2rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
 
-    .header p {
-      color: var(--text-sub);
-      font-size: 0.95rem;
-    }
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
 
-    .search-box {
-      width: 100%;
-      max-width: 520px;
-      padding: 0.85rem 1.25rem;
-      border-radius: 25px;
-      border: 1px solid var(--card-border);
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--text);
-      font-size: 1rem;
-      margin-top: 1.25rem;
-      backdrop-filter: blur(10px);
-      outline: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
+    .header h1 {
+      font-size: 2.2rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
 
-    .search-box:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
+    .header p {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+    }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.5rem;
-      perspective: 1000px;
-    }
+    .search-box {
+      width: 100%;
+      max-width: 520px;
+      padding: 0.85rem 1.25rem;
+      border-radius: 25px;
+      border: 1px solid var(--card-border);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text);
+      font-size: 1rem;
+      margin-top: 1.25rem;
+      backdrop-filter: blur(10px);
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1.25rem;
-      text-decoration: none;
-      color: inherit;
-      backdrop-filter: blur(12px);
-      transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-      transform-style: preserve-3d;
-    }
+    .search-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.15), transparent);
-      transition: 0.5s;
-    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+      perspective: 1000px;
+    }
 
-    .card:hover::before {
-      left: 100%;
-    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      backdrop-filter: blur(12px);
+      transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
 
-    .card:hover {
-      border-color: var(--card-border-hover);
-      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
-    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.15), transparent);
+      transition: 0.5s;
+    }
 
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.85rem;
-    }
+    .card:hover::before {
+      left: 100%;
+    }
 
-    .tag {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.1);
-      padding: 0.25rem 0.6rem;
-      border-radius: 20px;
-      border: 1px solid rgba(56, 189, 248, 0.2);
-    }
+    .card:hover {
+      border-color: var(--card-border-hover);
+      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+    }
 
-    .card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      object-fit: contain;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2px;
-    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
 
-    .card h3 {
-      margin: 0 0 0.4rem 0;
-      font-size: 1.15rem;
-      font-weight: 600;
-    }
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
 
-    .card p {
-      margin: 0 0 1.25rem 0;
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      line-height: 1.4;
-    }
+    .card-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px;
+    }
 
-    .card-action {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+    .card h3 {
+      margin: 0 0 0.4rem 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
 
-    .card-action span {
-      transition: transform 0.2s ease;
-    }
+    .card p {
+      margin: 0 0 1.25rem 0;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
 
-    .card:hover .card-action span {
-      transform: translateX(4px);
-    }
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-    .footer {
-      max-width: 1150px;
-      margin: 3rem auto 0 auto;
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 1.5rem;
-    }
+    .card-action span {
+      transition: transform 0.2s ease;
+    }
 
-    .developer-badge {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--card-border);
-      padding: 0.5rem 1.25rem;
-      border-radius: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      cursor: pointer;
-    }
+    .card:hover .card-action span {
+      transform: translateX(4px);
+    }
 
-    .developer-badge:hover, .developer-badge:active {
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
-      transform: translateY(-2px);
-    }
+    .footer {
+      max-width: 1150px;
+      margin: 3rem auto 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.5rem;
+    }
 
-    .developer-badge strong {
-      color: var(--accent);
-    }
-  </style>
+    .developer-badge {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 1.25rem;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .developer-badge:hover, .developer-badge:active {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .developer-badge strong {
+      color: var(--accent);
+    }
+  </style>
 </head>
 <body>
 
-  <canvas id="bgCanvas"></canvas>
+  <canvas id="bgCanvas"></canvas>
 
-  <div class="container">
-    <div class="header">
-      <h1>Student All-in-One Hub</h1>
-      <p>Quick access to all Sairam academic & learning portals</p>
-      <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder="Search platforms..." onkeyup="filterCards()">
-    </div>
+  <div class="container">
+    <div class="header">
+      <h1>Student All-in-One Hub</h1>
+      <p>Quick access to all Sairam academic & learning portals</p>
+      <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder="Search platforms..." onkeyup="filterCards()">
+    </div>
 
-    <div class="grid" id="portalGrid">
+    <div class="grid" id="portalGrid">
 
-      <a href="https://edumate.sairam.edu.in/" target="_blank" class="card" data-title="EDUMATE Sri Sairam Engineering College SEC">
-        <div>
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Edumate">
-          </div>
-          <h3>Edumate Portal</h3>
-          <p>SEC Edumate login for academic tracking, attendance, and internal marks.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://edumate.sairam.edu.in/" target="_blank" class="card" data-title="EDUMATE Sri Sairam Engineering College SEC">
+        <div>
+          <div class="card-top">
+            <span class="tag">Academics</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Edumate">
+          </div>
+          <h3>Edumate Portal</h3>
+          <p>SEC Edumate login for academic tracking, attendance, and internal marks.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://sairam.edu.in" target="_blank" class="card" data-title="Sri Sairam Engineering College SEC Main Site">
-        <div>
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SEC">
-          </div>
-          <h3>SEC Main Site</h3>
-          <p>Official Sri Sairam Engineering College institutional portal and updates.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://sairam.edu.in" target="_blank" class="card" data-title="Sri Sairam Engineering College SEC Main Site">
+        <div>
+          <div class="card-top">
+            <span class="tag">Academics</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SEC">
+          </div>
+          <h3>SEC Main Site</h3>
+          <p>Official Sri Sairam Engineering College institutional portal and updates.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
-        <div>
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Sairam PGPA">
-          </div>
-          <h3>Sairam PGPA Portal</h3>
-          <p>Official Sairam Grievance Redressal Portal for student and parent institutional feedback.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
+        <div>
+          <div class="card-top">
+            <span class="tag">Academics</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Sairam PGPA">
+          </div>
+          <h3>Sairam PGPA Portal</h3>
+          <p>Official Sairam Grievance Redressal Portal for student and parent institutional feedback.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
-        <div>
-          <div class="card-top">
-            <span class="tag">AI Tools</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL AI">
-          </div>
-          <h3>SAIL AI Learning (Student)</h3>
-          <p>Sairam AI-driven personalized learning platform for assessments and analytics.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
+        <div>
+          <div class="card-top">
+            <span class="tag">AI Tools</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL AI">
+          </div>
+          <h3>SAIL AI Learning (Student)</h3>
+          <p>Sairam AI-driven personalized learning platform for assessments and analytics.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
-        <div>
-          <div class="card-top">
-            <span class="tag">AI Tools</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL Mentor">
-          </div>
-          <h3>SAIL AI Learning (Mentor)</h3>
-          <p>Faculty portal for AI-powered student coaching and curriculum management.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
+        <div>
+          <div class="card-top">
+            <span class="tag">AI Tools</span>
+            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL Mentor">
+          </div>
+          <h3>SAIL AI Learning (Mentor)</h3>
+          <p>Faculty portal for AI-powered student coaching and curriculum management.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://classroom.google.com" target="_blank" class="card" data-title="Google Classroom Learning Academics">
-        <div>
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64" class="card-icon" alt="Classroom">
-          </div>
-          <h3>Google Classroom</h3>
-          <p>Access virtual classes, track course materials, and submit assignments.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://classroom.google.com" target="_blank" class="card" data-title="Google Classroom Learning Academics">
+        <div>
+          <div class="card-top">
+            <span class="tag">Academics</span>
+            <img src="https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64" class="card-icon" alt="Classroom">
+          </div>
+          <h3>Google Classroom</h3>
+          <p>Access virtual classes, track course materials, and submit assignments.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://www.skillrack.com" target="_blank" class="card" data-title="skillrack.com programming coding">
-        <div>
-          <div class="card-top">
-            <span class="tag">Skill & Coding</span>
-            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="SkillRack">
-          </div>
-          <h3>SkillRack</h3>
-          <p>Programming practice portal for daily coding challenges and assessments.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://www.skillrack.com" target="_blank" class="card" data-title="skillrack.com programming coding">
+        <div>
+          <div class="card-top">
+            <span class="tag">Skill & Coding</span>
+            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="SkillRack">
+          </div>
+          <h3>SkillRack</h3>
+          <p>Programming practice portal for daily coding challenges and assessments.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://www.skillrack.com/profile" target="_blank" class="card" data-title="SkillRack Tracker profile stats">
-        <div>
-          <div class="card-top">
-            <span class="tag">Skill & Coding</span>
-            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="Tracker">
-          </div>
-          <h3>SkillRack Tracker</h3>
-          <p>Direct dashboard access to review coding progress, rank, and solves.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://www.skillrack.com/profile" target="_blank" class="card" data-title="SkillRack Tracker profile stats">
+        <div>
+          <div class="card-top">
+            <span class="tag">Skill & Coding</span>
+            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="Tracker">
+          </div>
+          <h3>SkillRack Tracker</h3>
+          <p>Direct dashboard access to review coding progress, rank, and solves.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://swayam.gov.in" target="_blank" class="card" data-title="Swayam Central NPTEL Courses">
-        <div>
-          <div class="card-top">
-            <span class="tag">Learning</span>
-            <img src="https://www.google.com/s2/favicons?domain=swayam.gov.in&sz=64" class="card-icon" alt="Swayam">
-          </div>
-          <h3>Swayam Central</h3>
-          <p>Government portal for NPTEL certifications and online higher education courses.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://swayam.gov.in" target="_blank" class="card" data-title="Swayam Central NPTEL Courses">
+        <div>
+          <div class="card-top">
+            <span class="tag">Learning</span>
+            <img src="https://www.google.com/s2/favicons?domain=swayam.gov.in&sz=64" class="card-icon" alt="Swayam">
+          </div>
+          <h3>Swayam Central</h3>
+          <p>Government portal for NPTEL certifications and online higher education courses.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://www.coursera.org" target="_blank" class="card" data-title="Coursera online learning degrees">
-        <div>
-          <div class="card-top">
-            <span class="tag">Learning</span>
-            <img src="https://www.google.com/s2/favicons?domain=coursera.org&sz=64" class="card-icon" alt="Coursera">
-          </div>
-          <h3>Coursera</h3>
-          <p>Global e-learning platform offering professional certificates and specialization tracks.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://www.coursera.org" target="_blank" class="card" data-title="Coursera online learning degrees">
+        <div>
+          <div class="card-top">
+            <span class="tag">Learning</span>
+            <img src="https://www.google.com/s2/favicons?domain=coursera.org&sz=64" class="card-icon" alt="Coursera">
+          </div>
+          <h3>Coursera</h3>
+          <p>Global e-learning platform offering professional certificates and specialization tracks.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://accounts.digitallocker.gov.in/" target="_blank" class="card" data-title="DigiLocker Government Digital Documents">
-        <div>
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=digitallocker.gov.in&sz=64" class="card-icon" alt="DigiLocker">
-          </div>
-          <h3>DigiLocker</h3>
-          <p>Official cloud platform for secure storage and verification of academic documents.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://accounts.digitallocker.gov.in/" target="_blank" class="card" data-title="DigiLocker Government Digital Documents">
+        <div>
+          <div class="card-top">
+            <span class="tag">Government</span>
+            <img src="https://www.google.com/s2/favicons?domain=digitallocker.gov.in&sz=64" class="card-icon" alt="DigiLocker">
+          </div>
+          <h3>DigiLocker</h3>
+          <p>Official cloud platform for secure storage and verification of academic documents.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://mybharat.gov.in" target="_blank" class="card" data-title="Home MYBharat youth portal my bharath">
-        <div>
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=mybharat.gov.in&sz=64" class="card-icon" alt="MYBharat">
-          </div>
-          <h3>MYBharat Portal</h3>
-          <p>National initiative for youth empowerment, skill development, and volunteering.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://mybharat.gov.in" target="_blank" class="card" data-title="Home MYBharat youth portal my bharath">
+        <div>
+          <div class="card-top">
+            <span class="tag">Government</span>
+            <img src="https://www.google.com/s2/favicons?domain=mybharat.gov.in&sz=64" class="card-icon" alt="MYBharat">
+          </div>
+          <h3>MYBharat Portal</h3>
+          <p>National initiative for youth empowerment, skill development, and volunteering.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://www.mygov.in" target="_blank" class="card" data-title="MyGov.in Citizen Engagement Governance my government">
-        <div>
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=mygov.in&sz=64" class="card-icon" alt="MyGov">
-          </div>
-          <h3>MyGov.in</h3>
-          <p>Citizen participation platform for national governance and hackathons.</p>
-        </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a>
+      <a href="https://www.mygov.in" target="_blank" class="card" data-title="MyGov.in Citizen Engagement Governance my government">
+        <div>
+          <div class="card-top">
+            <span class="tag">Government</span>
+            <img src="https://www.google.com/s2/favicons?domain=mygov.in&sz=64" class="card-icon" alt="MyGov">
+          </div>
+          <h3>MyGov.in</h3>
+          <p>Citizen participation platform for national governance and hackathons.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-    </div>
-  </div>
+    </div>
+  </div>
 
-  <footer class="footer">
-    <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-badge">
-      Developed by <strong>BALAJI P</strong> | Cybersecurity Student 
-    </a>
-  </footer>
+  <footer class="footer">
+    <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-badge">
+      Developed by <strong>BALAJI P</strong> | Cybersecurity Student 
+    </a>
+  </footer>
 
-  <script>
-    function filterCards() {
-      const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const cards = document.querySelectorAll('.card');
+  <script>
+    function filterCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.card');
 
-      cards.forEach(card => {
-        const textContent = card.innerText.toLowerCase();
-        const dataTitle = (card.getAttribute('data-title') || '').toLowerCase();
-        
-        const isVisible = dataTitle.includes(query) || textContent.includes(query);
-        card.style.display = isVisible ? "flex" : "none";
-      });
-    }
+      cards.forEach(card => {
+        const textContent = card.innerText.toLowerCase();
+        const dataTitle = (card.getAttribute('data-title') || '').toLowerCase();
+        
+        const isVisible = dataTitle.includes(query) || textContent.includes(query);
+        card.style.display = isVisible ? "flex" : "none";
+      });
+    }
 
-    document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        card.style.transform = `perspective(1000px) rotateX(${-y / 12}deg) rotateY(${x / 12}deg) translateY(-6px)`;
-      });
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        card.style.transform = `perspective(1000px) rotateX(${-y / 12}deg) rotateY(${x / 12}deg) translateY(-6px)`;
+      });
 
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
-      });
-    });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+      });
+    });
 
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
 
-    let particles = [];
-    const maxDistance = 140;
+    let particles = [];
+    const maxDistance = 140;
 
-    let mouse = { x: null, y: null, radius: 200 };
+    let mouse = { x: null, y: null, radius: 200 };
 
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
 
-    window.addEventListener('mouseleave', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
+    window.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
-    }
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    }
 
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas);
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2;
-        this.radius = Math.random() * 2 + 1;
-      }
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 1.2;
+        this.vy = (Math.random() - 0.5) * 1.2;
+        this.radius = Math.random() * 2 + 1;
+      }
 
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
 
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
 
-        if (mouse.x !== null && mouse.y !== null) {
-          let dx = mouse.x - this.x;
-          let dy = mouse.y - this.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+        if (mouse.x !== null && mouse.y !== null) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < mouse.radius) {
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let force = (mouse.radius - distance) / mouse.radius;
-            let pushX = forceDirectionX * force * 5;
-            let pushY = forceDirectionY * force * 5;
+          if (distance < mouse.radius) {
+            let forceDirectionX = dx / distance;
+            let forceDirectionY = dy / distance;
+            let force = (mouse.radius - distance) / mouse.radius;
+            let pushX = forceDirectionX * force * 5;
+            let pushY = forceDirectionY * force * 5;
 
-            this.x -= pushX;
-            this.y -= pushY;
-          }
-        }
-      }
+            this.x -= pushX;
+            this.y -= pushY;
+          }
+        }
+      }
 
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fill();
-      }
-    }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fill();
+      }
+    }
 
-    function initParticles() {
-      particles = [];
-      const particleCount = window.innerWidth < 768 ? 35 : 80;
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-      }
-    }
+    function initParticles() {
+      particles = [];
+      const particleCount = window.innerWidth < 768 ? 35 : 80;
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
 
-    function animate() {
-      if (!document.hidden) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function animate() {
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (mouse.x !== null && mouse.y !== null) {
-          let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
-          glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
-          glow.addColorStop(0.5, 'rgba(56, 189, 248, 0.05)');
-          glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
-          ctx.fillStyle = glow;
-          ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, mouse.radius * 1.2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        if (mouse.x !== null && mouse.y !== null) {
+          let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
+          glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
+          glow.addColorStop(0.5, 'rgba(56, 189, 248, 0.05)');
+          glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(mouse.x, mouse.y, mouse.radius * 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
 
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist < maxDistance) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / maxDistance * 0.8})`;
-              ctx.lineWidth = 0.6;
-              ctx.stroke();
-            }
-          }
+            if (dist < maxDistance) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / maxDistance * 0.8})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
 
-          if (mouse.x !== null && mouse.y !== null) {
-            const mDx = particles[i].x - mouse.x;
-            const mDy = particles[i].y - mouse.y;
-            const mDist = Math.sqrt(mDx * mDx + mDy * mDy);
+          if (mouse.x !== null && mouse.y !== null) {
+            const mDx = particles[i].x - mouse.x;
+            const mDy = particles[i].y - mouse.y;
+            const mDist = Math.sqrt(mDx * mDx + mDy * mDy);
 
-            if (mDist < mouse.radius) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(mouse.x, mouse.y);
-              ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - mDist / mouse.radius) * 0.9})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
-          }
-        }
-      }
-      requestAnimationFrame(animate);
-    }
+            if (mDist < mouse.radius) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - mDist / mouse.radius) * 0.9})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
 
-    resizeCanvas();
-    animate();
-  </script>
+    resizeCanvas();
+    animate();
+  </script>
 </body>
-</html> this my code i was host in versal make change when prople open a my website show a notification  antha chrome short cut poi dwn panna anta pop touch pannathumm app install pannanumm seriyea direct da
+</html>
