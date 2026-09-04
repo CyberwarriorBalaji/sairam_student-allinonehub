@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sairam Student Portal Hub</title>
 
-  <link rel="apple-touch-icon" sizes="180x180" href="https://sairam.edu.in/wp-content/uploads/2018/03/sec-logo.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="https://sairam.edu.in/wp-content/uploads/2018/03/sec-logo.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64">
+  <!-- Embedded Web App Manifest (Data URI) -->
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Sairam%20Student%20Portal%20Hub%22%2C%22short_name%22%3A%22Sairam%20Hub%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fwww.google.com%2Fs2%2Ffavicons%3Fdomain%3Dsairam.edu.in%26sz%3D512%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
   <style>
     :root {
@@ -38,6 +37,40 @@
       padding: 2rem;
     }
 
+    /* Fixed Top-Left Download/Install Button */
+    .download-btn-fixed {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.5rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .download-btn-fixed:hover {
+      background: var(--accent);
+      color: #090d16;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .download-btn-fixed svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -53,6 +86,7 @@
       margin: 0 auto;
       width: 100%;
       flex: 1;
+      margin-top: 1rem;
     }
 
     .header {
@@ -235,9 +269,86 @@
     .developer-badge strong {
       color: var(--accent);
     }
+
+    /* Modal Styling for App Installation Guide */
+    .pwa-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .pwa-modal {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px var(--accent-glow);
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .pwa-modal h3 {
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .pwa-modal p {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .pwa-instructions {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .pwa-instructions ol {
+      padding-left: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .pwa-buttons {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .pwa-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 20px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      background: var(--accent);
+      color: #090d16;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Fixed Top-Left Download Option -->
+  <button id="topLeftInstallBtn" class="download-btn-fixed" onclick="triggerInstall()">
+    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    Install App
+  </button>
 
   <canvas id="bgCanvas"></canvas>
 
@@ -334,7 +445,7 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://skillrack.gururaja.in/" target="_blank" class="card" data-title="SkillRack Tracker profile stats">
+      <a href="https://www.skillrack.com/profile" target="_blank" class="card" data-title="SkillRack Tracker profile stats">
         <div>
           <div class="card-top">
             <span class="tag">Skill & Coding</span>
@@ -415,7 +526,59 @@
     </a>
   </footer>
 
+  <!-- Installation Instruction Modal -->
+  <div id="pwaModalOverlay" class="pwa-modal-overlay">
+    <div class="pwa-modal">
+      <h3>Install App Shortcut</h3>
+      <p>To add this portal directly to your mobile/desktop home screen:</p>
+      <div class="pwa-instructions">
+        <ol>
+          <li>Open browser menu (<strong>⋮</strong> in Chrome / <strong>Share</strong> in Safari).</li>
+          <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</li>
+        </ol>
+      </div>
+      <div class="pwa-buttons">
+        <button class="pwa-btn" onclick="closeModal()">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    let deferredPrompt;
+
+    // Inline Service Worker created via Blob URL
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install', (e) => self.skipWaiting());
+        self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
+        self.addEventListener('fetch', (e) => {});
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+    }
+
+    // Capture Native Browser App Installation Event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    // Top-Left Button Trigger
+    async function triggerInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      } else {
+        document.getElementById('pwaModalOverlay').style.display = 'flex';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('pwaModalOverlay').style.display = 'none';
+    }
+
+    // Portal Search Filter
     function filterCards() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.card');
@@ -423,12 +586,12 @@
       cards.forEach(card => {
         const textContent = card.innerText.toLowerCase();
         const dataTitle = (card.getAttribute('data-title') || '').toLowerCase();
-        
         const isVisible = dataTitle.includes(query) || textContent.includes(query);
         card.style.display = isVisible ? "flex" : "none";
       });
     }
 
+    // Card 3D Tilt Effect
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
@@ -442,12 +605,12 @@
       });
     });
 
+    // Particle Canvas Background Animation
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
 
     let particles = [];
     const maxDistance = 140;
-
     let mouse = { x: null, y: null, radius: 200 };
 
     window.addEventListener('mousemove', (e) => {
