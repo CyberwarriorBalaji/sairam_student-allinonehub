@@ -2,47 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#030712">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <title>Sairam Student Portal Hub</title>
 
   <!-- Google Search & Standard Browser Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64">
   <link rel="icon" type="image/png" sizes="192x192" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=128">
 
-  <!-- Mobile Home Screen / Shortcut Icons (Android & iOS) -->
+  <!-- Mobile Home Screen / Shortcut Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=128">
-  <link rel="apple-touch-icon-precomposed" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=128">
+
+  <!-- Fonts & Three.js CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #090d16;
-      --card-bg: rgba(22, 32, 51, 0.65);
-      --card-border: rgba(56, 189, 248, 0.2);
-      --card-border-hover: rgba(56, 189, 248, 0.8);
+      --bg-dark: #030712;
+      --card-bg: rgba(10, 20, 38, 0.65);
+      --card-border: rgba(56, 189, 248, 0.18);
+      --card-border-hover: rgba(16, 185, 129, 0.8);
       --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.3);
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-glow: rgba(16, 185, 129, 0.3);
       --text: #f8fafc;
       --text-sub: #94a3b8;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      padding: 2rem;
+      padding: calc(1.5rem + var(--safe-top)) 1rem calc(1.5rem + var(--safe-bottom)) 1rem;
     }
 
-    #bgCanvas {
+    #webgl-bg {
       position: fixed;
       top: 0;
       left: 0;
@@ -53,22 +67,25 @@
     }
 
     .container {
-      max-width: 1150px;
+      max-width: 1200px;
       margin: 0 auto;
       width: 100%;
       flex: 1;
+      position: relative;
+      z-index: 1;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
     }
 
     .header h1 {
-      font-size: 2.2rem;
-      letter-spacing: 0.05em;
+      font-size: clamp(1.75rem, 6vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+      background: linear-gradient(135deg, #ffffff 10%, var(--accent) 50%, var(--accent-green) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
@@ -76,113 +93,172 @@
 
     .header p {
       color: var(--text-sub);
-      font-size: 0.95rem;
+      font-size: clamp(0.88rem, 3vw, 1.05rem);
+      font-weight: 400;
+    }
+
+    /* Search & Filter Controls */
+    .controls-wrapper {
+      max-width: 640px;
+      margin: 1.5rem auto 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-box-container {
+      position: relative;
+      width: 100%;
     }
 
     .search-box {
       width: 100%;
-      max-width: 520px;
-      padding: 0.85rem 1.25rem;
+      padding: 0.9rem 1.25rem;
       border-radius: 25px;
       border: 1px solid var(--card-border);
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(10, 20, 38, 0.75);
       color: var(--text);
-      font-size: 1rem;
-      margin-top: 1.25rem;
-      backdrop-filter: blur(10px);
+      font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       outline: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
 
     .search-box:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
+      border-color: var(--accent-green);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
 
+    /* Horizontal Category Chips */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      flex: 0 0 auto;
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .chip.active, .chip:active {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--accent-green);
+      color: #ffffff;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Grid Layout */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
       perspective: 1000px;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 1.25rem;
       text-decoration: none;
       color: inherit;
-      backdrop-filter: blur(12px);
-      transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      transform-style: preserve-3d;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      touch-action: manipulation;
     }
 
-    .card::before {
-      content: '';
+    .card:active {
+      transform: scale(0.97) !important;
+      border-color: var(--accent-green);
+    }
+
+    .card-glare {
       position: absolute;
       top: 0;
-      left: -100%;
+      left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.15), transparent);
-      transition: 0.5s;
+      pointer-events: none;
+      background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.12), transparent 40%);
+      border-radius: inherit;
+      z-index: 2;
     }
 
-    .card:hover::before {
-      left: 100%;
-    }
-
-    .card:hover {
-      border-color: var(--card-border-hover);
-      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow);
+    .card-content {
+      position: relative;
+      z-index: 3;
     }
 
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.85rem;
+      margin-bottom: 1rem;
     }
 
     .tag {
       font-size: 0.7rem;
       font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.1);
-      padding: 0.25rem 0.6rem;
+      letter-spacing: 0.05em;
+      color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.12);
+      padding: 0.25rem 0.65rem;
       border-radius: 20px;
-      border: 1px solid rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .card-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
       object-fit: contain;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .card h3 {
       margin: 0 0 0.4rem 0;
       font-size: 1.15rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .card p {
       margin: 0 0 1.25rem 0;
       font-size: 0.85rem;
       color: var(--text-sub);
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .card-action {
@@ -190,13 +266,15 @@
       align-items: center;
       justify-content: flex-end;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--accent);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
     .card-action span {
+      display: inline-block;
+      margin-left: 6px;
       transition: transform 0.2s ease;
     }
 
@@ -205,57 +283,81 @@
     }
 
     .footer {
-      max-width: 1150px;
+      max-width: 1200px;
       margin: 3rem auto 0 auto;
       width: 100%;
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding-top: 1.5rem;
+      position: relative;
+      z-index: 1;
     }
 
     .developer-badge {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-sub);
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(10, 20, 38, 0.8);
       border: 1px solid var(--card-border);
-      padding: 0.5rem 1.25rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       text-decoration: none;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    .developer-badge:hover, .developer-badge:active {
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
-      transform: translateY(-2px);
+      text-align: center;
     }
 
     .developer-badge strong {
-      color: var(--accent);
+      color: var(--accent-green);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .card {
+        padding: 1.1rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <canvas id="bgCanvas"></canvas>
+  <canvas id="webgl-bg"></canvas>
 
   <div class="container">
     <div class="header">
-      <h1>Student All-in-One Hub</h1>
-      <p>Quick access to all Sairam academic & learning portals</p>
-      <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder="Search platforms..." onkeyup="filterCards()">
+      <h1>Student Hub</h1>
+      <p>Quick access to Sairam learning & academic portals</p>
+    </div>
+
+    <div class="controls-wrapper">
+      <div class="search-box-container">
+        <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder=">_ Search platforms..." onkeyup="filterCards()">
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="filter-bar" id="filterBar">
+        <button class="chip active" onclick="setCategory('ALL', this)">All</button>
+        <button class="chip" onclick="setCategory('Academics', this)">Academics</button>
+        <button class="chip" onclick="setCategory('Skill & Coding', this)">Coding</button>
+        <button class="chip" onclick="setCategory('Government', this)">Govt</button>
+        <button class="chip" onclick="setCategory('Learning', this)">Learning</button>
+      </div>
     </div>
 
     <div class="grid" id="portalGrid">
 
-      <a href="https://edumate.sairam.edu.in/" target="_blank" class="card" data-title="EDUMATE Sri Sairam Engineering College SEC">
-        <div>
+      <a href="https://edumate.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="EDUMATE Sri Sairam Engineering College SEC">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Edumate">
@@ -266,20 +368,22 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a> 
 
-      <a href="https://web.nen.wfglobal.org/" target="_blank" class="card" data-title="NEN Wadhwani Foundation Entrepreneurship Network">
-        <div>
-         <div class="card-top">
-         <span class="tag">Entreprenship</span>
-         <img src="https://www.google.com/s2/favicons?domain=nen.wfglobal.org&sz=64" class="card-icon" alt="NEN WFGlobal">
-         </div>
-       <h3>Wadhwani Portal 🚀</h3>
-         <p>Wadhwani Foundation National Entrepreneurship Network platform for startup support and course tracking.</p>
-      </div>
-         <div class="card-action">Launch <span>&rarr;</span></div>
-     </a>
+      <a href="https://web.nen.wfglobal.org/" target="_blank" class="card" data-category="Entrepreneurship" data-title="NEN Wadhwani Foundation Entrepreneurship Network">
+        <div class="card-glare"></div>
+        <div class="card-content">
+          <div class="card-top">
+            <span class="tag">Entrepreneurship</span>
+            <img src="https://www.google.com/s2/favicons?domain=nen.wfglobal.org&sz=64" class="card-icon" alt="NEN WFGlobal">
+          </div>
+          <h3>Wadhwani Portal 🚀</h3>
+          <p>Wadhwani Foundation National Entrepreneurship Network platform for startup support.</p>
+        </div>
+        <div class="card-action">Launch <span>&rarr;</span></div>
+      </a>
 
-      <a href="https://sairam.edu.in" target="_blank" class="card" data-title="Sri Sairam Engineering College SEC Main Site">
-        <div>
+      <a href="https://sairam.edu.in" target="_blank" class="card" data-category="Academics" data-title="Sri Sairam Engineering College SEC Main Site">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SEC">
@@ -290,56 +394,61 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a> 
 
-      <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
-        <div>
+      <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Sairam PGPA">
           </div>
           <h3>Sairam PGPA Portal👾</h3>
-          <p>Official Sairam Grievance Redressal Portal for student and parent institutional feedback.</p>
+          <p>Official Sairam Grievance Redressal Portal for student and parent feedback.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
-        <div>
+      <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-category="Academics" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
-            <span class="tag">AI Tools</span>
+            <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL AI">
           </div>
-          <h3>SAIL AI Learning (Student)🕵️‍♀️</h3>
+          <h3>SAIL AI (Student)🕵️‍♀️</h3>
           <p>Sairam AI-driven personalized learning platform for assessments and analytics.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://project.sairamtap.edu.in/" target="_blank" class="card" data-title="Sairam project Login">
-        <div>
+      <a href="https://project.sairamtap.edu.in/" target="_blank" class="card" data-category="Academics" data-title="Sairam project Login">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
-            <span class="tag">AI Tools</span>
+            <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="sairamproject">
           </div>
-          <h3>Sairam project🤖</h3>
-          <p>student project portal.</p>
+          <h3>Sairam Project🤖</h3>
+          <p>Student project portal for tracking progress, submissions, and reviews.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
-        <div>
+      <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
-            <span class="tag">AI Tools</span>
+            <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL Mentor">
           </div>
-          <h3>SAIL AI Learning (Mentor)</h3>
+          <h3>SAIL AI (Mentor)</h3>
           <p>Faculty portal for AI-powered student coaching and curriculum management.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://classroom.google.com" target="_blank" class="card" data-title="Google Classroom Learning Academics">
-        <div>
+      <a href="https://classroom.google.com" target="_blank" class="card" data-category="Academics" data-title="Google Classroom Learning Academics">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Academics</span>
             <img src="https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64" class="card-icon" alt="Classroom">
@@ -350,8 +459,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://www.skillrack.com" target="_blank" class="card" data-title="skillrack.com programming coding">
-        <div>
+      <a href="https://www.skillrack.com" target="_blank" class="card" data-category="Skill & Coding" data-title="skillrack.com programming coding">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Skill & Coding</span>
             <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="SkillRack">
@@ -362,8 +472,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://skillrack.gururaja.in/" target="_blank" class="card" data-title="SkillRack Tracker profile stats">
-        <div>
+      <a href="https://skillrack.gururaja.in/" target="_blank" class="card" data-category="Skill & Coding" data-title="SkillRack Tracker profile stats">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Skill & Coding</span>
             <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="Tracker">
@@ -374,8 +485,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://in.linkedin.com" target="_blank" class="card" data-title="LinkedIn India">
-        <div>
+      <a href="https://in.linkedin.com" target="_blank" class="card" data-category="Professional" data-title="LinkedIn India">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Professional</span>
             <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" class="card-icon" alt="LinkedIn">
@@ -386,8 +498,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://swayam.gov.in" target="_blank" class="card" data-title="Swayam Central NPTEL Courses">
-        <div>
+      <a href="https://swayam.gov.in" target="_blank" class="card" data-category="Learning" data-title="Swayam Central NPTEL Courses">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Learning</span>
             <img src="https://www.google.com/s2/favicons?domain=swayam.gov.in&sz=64" class="card-icon" alt="Swayam">
@@ -398,8 +511,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://www.coursera.org" target="_blank" class="card" data-title="Coursera online learning degrees">
-        <div>
+      <a href="https://www.coursera.org" target="_blank" class="card" data-category="Learning" data-title="Coursera online learning degrees">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Learning</span>
             <img src="https://www.google.com/s2/favicons?domain=coursera.org&sz=64" class="card-icon" alt="Coursera">
@@ -410,8 +524,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://accounts.digitallocker.gov.in/signin/oauth_partner/%2Foauth2%2F1%2Fauthorize" target="_blank" class="card" data-title="DigiLocker Government Digital Documents">
-        <div>
+      <a href="https://accounts.digitallocker.gov.in/signin/oauth_partner/%2Foauth2%2F1%2Fauthorize" target="_blank" class="card" data-category="Government" data-title="DigiLocker Government Digital Documents">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Government</span>
             <img src="https://www.google.com/s2/favicons?domain=digitallocker.gov.in&sz=64" class="card-icon" alt="DigiLocker">
@@ -422,8 +537,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://mybharat.gov.in" target="_blank" class="card" data-title="Home MYBharat youth portal my bharath">
-        <div>
+      <a href="https://mybharat.gov.in" target="_blank" class="card" data-category="Government" data-title="Home MYBharat youth portal my bharath">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Government</span>
             <img src="https://www.google.com/s2/favicons?domain=mybharat.gov.in&sz=64" class="card-icon" alt="MYBharat">
@@ -434,8 +550,9 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://www.mygov.in" target="_blank" class="card" data-title="MyGov.in Citizen Engagement Governance my government">
-        <div>
+      <a href="https://www.mygov.in" target="_blank" class="card" data-category="Government" data-title="MyGov.in Citizen Engagement Governance my government">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Government</span>
             <img src="https://www.google.com/s2/favicons?domain=mygov.in&sz=64" class="card-icon" alt="MyGov">
@@ -446,14 +563,15 @@
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
 
-      <a href="https://fitindia.gov.in" target="_blank" class="card" data-title="Fit India Movement">
-        <div>
+      <a href="https://fitindia.gov.in" target="_blank" class="card" data-category="Fitness" data-title="Fit India Movement">
+        <div class="card-glare"></div>
+        <div class="card-content">
           <div class="card-top">
             <span class="tag">Fitness</span>
             <img src="https://www.google.com/s2/favicons?domain=fitindia.gov.in&sz=64" class="card-icon" alt="Fit India">
           </div>
           <h3>Fit India 🏃</h3>
-          <p>Official portal for the Fit India Movement to encourage a healthy and active lifestyle.</p>
+          <p>Official portal for the Fit India Movement to encourage a healthy active lifestyle.</p>
         </div>
         <div class="card-action">Launch <span>&rarr;</span></div>
       </a>
@@ -463,11 +581,29 @@
 
   <footer class="footer">
     <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-badge">
-      Developed by <strong>BALAJI P</strong> | Cybersecurity Student click for connection
+      Developed by <strong>BALAJI P</strong> | Cybersecurity Student
     </a>
   </footer>
 
   <script>
+    /* --- Mobile Detect & Haptics --- */
+    const isMobile = window.innerWidth < 768;
+    
+    function triggerHaptic() {
+      if ('vibrate' in navigator) navigator.vibrate(12);
+    }
+
+    /* --- Combined Search & Category Filter Logic --- */
+    let currentCategory = 'ALL';
+
+    function setCategory(cat, el) {
+      triggerHaptic();
+      currentCategory = cat;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      filterCards();
+    }
+
     function filterCards() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.card');
@@ -475,155 +611,182 @@
       cards.forEach(card => {
         const textContent = card.innerText.toLowerCase();
         const dataTitle = (card.getAttribute('data-title') || '').toLowerCase();
-        
-        const isVisible = dataTitle.includes(query) || textContent.includes(query);
-        card.style.display = isVisible ? "flex" : "none";
+        const cardCategory = card.getAttribute('data-category') || '';
+
+        const matchesQuery = dataTitle.includes(query) || textContent.includes(query);
+        const matchesCategory = (currentCategory === 'ALL') || (cardCategory === currentCategory);
+
+        card.style.display = (matchesQuery && matchesCategory) ? "flex" : "none";
       });
     }
 
+    /* --- Dynamic 3D Interaction --- */
     document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        card.style.transform = `perspective(1000px) rotateX(${-y / 12}deg) rotateY(${x / 12}deg) translateY(-6px)`;
+      let reqId = null;
+
+      card.addEventListener('click', () => triggerHaptic());
+
+      if (!isMobile) {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const rotateX = ((y - centerY) / centerY) * -10;
+          const rotateY = ((x - centerX) / centerX) * 10;
+
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+
+          if (reqId) cancelAnimationFrame(reqId);
+          reqId = requestAnimationFrame(() => {
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(6px)`;
+          });
+        });
+
+        card.addEventListener('mouseleave', () => {
+          if (reqId) cancelAnimationFrame(reqId);
+          card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+        });
+      }
+    });
+
+    /* --- Three.js Mobile-Optimized Background Engine --- */
+    const canvas = document.getElementById('webgl-bg');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = isMobile ? 42 : 32;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: !isMobile });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+
+    const nodeCount = isMobile ? 30 : 75;
+    const maxDistance = isMobile ? 11 : 14;
+    const nodePositions = new Float32Array(nodeCount * 3);
+    const nodeVelocities = [];
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodePositions[i * 3] = (Math.random() - 0.5) * (isMobile ? 50 : 70);
+      nodePositions[i * 3 + 1] = (Math.random() - 0.5) * (isMobile ? 50 : 70);
+      nodePositions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+
+      nodeVelocities.push({
+        x: (Math.random() - 0.5) * 0.03,
+        y: (Math.random() - 0.5) * 0.03,
+        z: (Math.random() - 0.5) * 0.03
       });
-
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
-      });
-    });
-
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let particles = [];
-    const maxDistance = 140;
-
-    let mouse = { x: null, y: null, radius: 200 };
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener('mouseleave', () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      initParticles();
     }
 
-    window.addEventListener('resize', resizeCanvas);
+    const nodeGeo = new THREE.BufferGeometry();
+    nodeGeo.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 1.2;
-        this.vy = (Math.random() - 0.5) * 1.2;
-        this.radius = Math.random() * 2 + 1;
-      }
+    const nodeMat = new THREE.PointsMaterial({
+      color: 0x10b981,
+      size: isMobile ? 0.6 : 0.5,
+      transparent: true,
+      opacity: 0.75
+    });
 
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
+    const plexusNodes = new THREE.Points(nodeGeo, nodeMat);
+    scene.add(plexusNodes);
 
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    const linesGeo = new THREE.BufferGeometry();
+    const linesMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending
+    });
+    const linesMesh = new THREE.LineSegments(linesGeo, linesMat);
+    scene.add(linesMesh);
 
-        if (mouse.x !== null && mouse.y !== null) {
-          let dx = mouse.x - this.x;
-          let dy = mouse.y - this.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+    function createCyberShield() {
+      const shieldGroup = new THREE.Group();
+      const outerGeo = new THREE.IcosahedronGeometry(isMobile ? 3.8 : 5.5, 1);
+      const outerMat = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.2 });
+      shieldGroup.add(new THREE.Mesh(outerGeo, outerMat));
 
-          if (distance < mouse.radius) {
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let force = (mouse.radius - distance) / mouse.radius;
-            let pushX = forceDirectionX * force * 5;
-            let pushY = forceDirectionY * force * 5;
+      const coreGeo = new THREE.OctahedronGeometry(isMobile ? 1.8 : 2.8, 0);
+      const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.6 });
+      const core = new THREE.Mesh(coreGeo, coreMat);
+      shieldGroup.add(core);
 
-            this.x -= pushX;
-            this.y -= pushY;
-          }
-        }
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fill();
-      }
+      return { group: shieldGroup, core };
     }
 
-    function initParticles() {
-      particles = [];
-      const particleCount = window.innerWidth < 768 ? 35 : 80;
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-      }
-    }
+    const cyberShield = createCyberShield();
+    cyberShield.group.position.set(isMobile ? 0 : -22, isMobile ? 18 : 8, -15);
+    scene.add(cyberShield.group);
+
+    let targetMouseX = 0, targetMouseY = 0;
+    let currentMouseX = 0, currentMouseY = 0;
+
+    window.addEventListener(isMobile ? 'touchmove' : 'mousemove', (e) => {
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+      targetMouseX = (x / window.innerWidth - 0.5) * 2;
+      targetMouseY = (y / window.innerHeight - 0.5) * 2;
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    const clock = new THREE.Clock();
 
     function animate() {
-      if (!document.hidden) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
 
-        if (mouse.x !== null && mouse.y !== null) {
-          let glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius * 1.2);
-          glow.addColorStop(0, 'rgba(56, 189, 248, 0.18)');
-          glow.addColorStop(0.5, 'rgba(56, 189, 248, 0.05)');
-          glow.addColorStop(1, 'rgba(56, 189, 248, 0)');
-          ctx.fillStyle = glow;
-          ctx.beginPath();
-          ctx.arc(mouse.x, mouse.y, mouse.radius * 1.2, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      currentMouseX += (targetMouseX - currentMouseX) * 0.04;
+      currentMouseY += (targetMouseY - currentMouseY) * 0.04;
 
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
+      const posAttr = nodeGeo.attributes.position;
+      const linePositions = [];
 
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+      for (let i = 0; i < nodeCount; i++) {
+        posAttr.setX(i, posAttr.getX(i) + nodeVelocities[i].x);
+        posAttr.setY(i, posAttr.getY(i) + nodeVelocities[i].y);
+        posAttr.setZ(i, posAttr.getZ(i) + nodeVelocities[i].z);
 
-            if (dist < maxDistance) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(56, 189, 248, ${1 - dist / maxDistance * 0.8})`;
-              ctx.lineWidth = 0.6;
-              ctx.stroke();
-            }
-          }
+        if (Math.abs(posAttr.getX(i)) > 30) nodeVelocities[i].x *= -1;
+        if (Math.abs(posAttr.getY(i)) > 30) nodeVelocities[i].y *= -1;
+        if (Math.abs(posAttr.getZ(i)) > 20) nodeVelocities[i].z *= -1;
 
-          if (mouse.x !== null && mouse.y !== null) {
-            const mDx = particles[i].x - mouse.x;
-            const mDy = particles[i].y - mouse.y;
-            const mDist = Math.sqrt(mDx * mDx + mDy * mDy);
+        for (let j = i + 1; j < nodeCount; j++) {
+          const dx = posAttr.getX(i) - posAttr.getX(j);
+          const dy = posAttr.getY(i) - posAttr.getY(j);
+          const dz = posAttr.getZ(i) - posAttr.getZ(j);
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-            if (mDist < mouse.radius) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(mouse.x, mouse.y);
-              ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - mDist / mouse.radius) * 0.9})`;
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
+          if (dist < maxDistance) {
+            linePositions.push(
+              posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i),
+              posAttr.getX(j), posAttr.getY(j), posAttr.getZ(j)
+            );
           }
         }
       }
-      requestAnimationFrame(animate);
+      posAttr.needsUpdate = true;
+      linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+
+      cyberShield.group.rotation.y = elapsedTime * 0.2;
+      cyberShield.core.rotation.x = elapsedTime * 0.4;
+
+      camera.position.x = currentMouseX * 2;
+      camera.position.y = -currentMouseY * 2;
+      camera.lookAt(scene.position);
+
+      renderer.render(scene, camera);
     }
 
-    resizeCanvas();
     animate();
   </script>
 </body>
