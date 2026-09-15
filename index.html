@@ -3,37 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#030712">
+  <meta name="theme-color" content="#02040a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <title>Sairam Student Portal Hub</title>
+  <title>Sairam Portal Hub</title>
 
-  <!-- Google Search & Standard Browser Favicons -->
+  <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64">
-  <link rel="icon" type="image/png" sizes="192x192" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=128">
-
-  <!-- Mobile Home Screen / Shortcut Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=128">
 
-  <!-- Fonts & Three.js CDN -->
+  <!-- Ultra-Modern Display Fonts & Three.js CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #030712;
-      --card-bg: rgba(10, 20, 38, 0.65);
-      --card-border: rgba(56, 189, 248, 0.18);
-      --card-border-hover: rgba(16, 185, 129, 0.8);
-      --accent: #38bdf8;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-glow: rgba(16, 185, 129, 0.3);
-      --text: #f8fafc;
-      --text-sub: #94a3b8;
+      --bg-black: #02040a;
+      --card-glass: rgba(255, 255, 255, 0.03);
+      --card-glass-hover: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-active: rgba(0, 240, 255, 0.5);
+      
+      --neon-cyan: #00f0ff;
+      --neon-purple: #7928ca;
+      --neon-pink: #ff0080;
+      --neon-emerald: #00df72;
+      
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -47,15 +49,16 @@
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text);
+      background-color: var(--bg-black);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      padding: calc(1.5rem + var(--safe-top)) 1rem calc(1.5rem + var(--safe-bottom)) 1rem;
+      padding: calc(2rem + var(--safe-top)) 1.25rem calc(2rem + var(--safe-bottom)) 1.25rem;
     }
 
+    /* Ambient Spatial Lighting */
     #webgl-bg {
       position: fixed;
       top: 0;
@@ -66,8 +69,35 @@
       pointer-events: none;
     }
 
+    .aurora-bg {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.35;
+      animation: floatAura 20s ease-in-out infinite alternate;
+    }
+
+    .blob-1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, var(--neon-purple), transparent 70%); }
+    .blob-2 { bottom: -20%; right: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, var(--neon-cyan), transparent 70%); animation-delay: -10s; }
+
+    @keyframes floatAura {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, 40px) scale(1.15); }
+    }
+
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       width: 100%;
       flex: 1;
@@ -75,525 +105,626 @@
       z-index: 1;
     }
 
+    /* Spatial Header */
     .header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .header-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 0.4rem 1.2rem;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      color: var(--neon-cyan);
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(20px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .header-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan);
     }
 
     .header h1 {
-      font-size: clamp(1.75rem, 6vw, 3.2rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.5rem, 8vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 10%, var(--accent) 50%, var(--accent-green) 100%);
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.6) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.85rem;
     }
 
     .header p {
-      color: var(--text-sub);
-      font-size: clamp(0.88rem, 3vw, 1.05rem);
+      color: var(--text-dim);
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      max-width: 580px;
+      margin: 0 auto;
       font-weight: 400;
+      line-height: 1.6;
     }
 
-    /* Search & Filter Controls */
+    /* Floating Capsule Control Bar */
     .controls-wrapper {
-      max-width: 640px;
-      margin: 1.5rem auto 2rem auto;
+      max-width: 720px;
+      margin: 0 auto 3rem auto;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.2rem;
     }
 
-    .search-box-container {
+    .search-container {
       position: relative;
       width: 100%;
     }
 
     .search-box {
       width: 100%;
-      padding: 0.9rem 1.25rem;
-      border-radius: 25px;
+      padding: 1.1rem 1.6rem;
+      border-radius: 20px;
       border: 1px solid var(--card-border);
-      background: rgba(10, 20, 38, 0.75);
-      color: var(--text);
-      font-size: 0.95rem;
-      font-family: 'JetBrains Mono', monospace;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(10, 15, 28, 0.5);
+      color: var(--text-main);
+      font-size: 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
       outline: none;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
     .search-box:focus {
-      border-color: var(--accent-green);
-      box-shadow: 0 0 20px var(--accent-glow);
+      border-color: var(--neon-cyan);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 30px rgba(0, 240, 255, 0.25);
     }
 
-    /* Horizontal Category Chips */
     .filter-bar {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.6rem;
       overflow-x: auto;
       padding-bottom: 0.5rem;
       scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+      justify-content: center;
     }
 
-    .filter-bar::-webkit-scrollbar {
-      display: none;
-    }
+    .filter-bar::-webkit-scrollbar { display: none; }
 
     .chip {
       flex: 0 0 auto;
-      padding: 0.45rem 0.9rem;
-      border-radius: 20px;
-      background: rgba(15, 23, 42, 0.6);
+      padding: 0.55rem 1.25rem;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.02);
       border: 1px solid var(--card-border);
-      color: var(--text-sub);
-      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
       font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.02em;
       cursor: pointer;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(16px);
     }
 
-    .chip.active, .chip:active {
-      background: rgba(16, 185, 129, 0.18);
-      border-color: var(--accent-green);
-      color: #ffffff;
-      box-shadow: 0 0 12px var(--accent-glow);
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
     }
 
-    /* Grid Layout */
+    .chip.active {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+    }
+
+    /* Bento Grid System */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.25rem;
-      perspective: 1000px;
+      perspective: 1200px;
     }
 
     .card {
-      background: var(--card-bg);
+      background: var(--card-glass);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 1.25rem;
+      border-radius: 28px;
+      padding: 1.6rem;
       text-decoration: none;
       color: inherit;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      touch-action: manipulation;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 16px 36px rgba(0, 0, 0, 0.4);
     }
 
-    .card:active {
-      transform: scale(0.97) !important;
-      border-color: var(--accent-green);
-    }
-
-    .card-glare {
+    /* Dynamic Border Gradient on Hover */
+    .card::before {
+      content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
+      border-radius: 28px;
+      padding: 1.5px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 60%, rgba(0, 240, 255, 0.3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
       pointer-events: none;
-      background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.12), transparent 40%);
-      border-radius: inherit;
+      transition: opacity 0.3s ease;
+      opacity: 0.6;
+    }
+
+    .card:hover {
+      background: var(--card-glass-hover);
+      border-color: rgba(0, 240, 255, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.12);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-spotlight {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(450px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 240, 255, 0.1), transparent 40%);
+      z-index: 1;
+    }
+
+    .card-body {
+      position: relative;
       z-index: 2;
     }
 
-    .card-content {
-      position: relative;
-      z-index: 3;
-    }
-
-    .card-top {
+    .card-header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
-    .tag {
-      font-size: 0.7rem;
+    .tag-pill {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.68rem;
       font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent-green);
-      background: rgba(16, 185, 129, 0.12);
-      padding: 0.25rem 0.65rem;
-      border-radius: 20px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      letter-spacing: 0.08em;
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.08);
+      padding: 0.35rem 0.8rem;
+      border-radius: 100px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
     }
 
-    .card-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+    .card-icon-frame {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon-frame img {
+      width: 24px;
+      height: 24px;
       object-fit: contain;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 5px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .card h3 {
-      margin: 0 0 0.4rem 0;
-      font-size: 1.15rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
       font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
     }
 
     .card p {
-      margin: 0 0 1.25rem 0;
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      line-height: 1.45;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
     }
 
-    .card-action {
+    .card-footer-row {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      font-size: 0.8rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
       font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--accent);
+      letter-spacing: 0.08em;
+      color: var(--neon-cyan);
       text-transform: uppercase;
+      gap: 6px;
     }
 
-    .card-action span {
-      display: inline-block;
-      margin-left: 6px;
-      transition: transform 0.2s ease;
+    .card-footer-row span {
+      transition: transform 0.25s ease;
     }
 
-    .card:hover .card-action span {
-      transform: translateX(4px);
+    .card:hover .card-footer-row span {
+      transform: translateX(6px);
     }
 
+    /* Footer */
     .footer {
-      max-width: 1200px;
-      margin: 3rem auto 0 auto;
+      max-width: 1280px;
+      margin: 4rem auto 0 auto;
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 2rem;
       position: relative;
       z-index: 1;
     }
 
-    .developer-badge {
-      font-size: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--text-sub);
-      background: rgba(10, 20, 38, 0.8);
+    .developer-pill {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      background: rgba(10, 15, 28, 0.6);
       border: 1px solid var(--card-border);
-      padding: 0.6rem 1.2rem;
-      border-radius: 30px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding: 0.75rem 1.6rem;
+      border-radius: 100px;
+      backdrop-filter: blur(20px);
       text-decoration: none;
-      text-align: center;
+      transition: all 0.3s ease;
     }
 
-    .developer-badge strong {
-      color: var(--accent-green);
+    .developer-pill:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
     }
 
-    @media (max-width: 600px) {
-      body {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-      }
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      .card {
-        padding: 1.1rem;
-      }
+    .developer-pill strong {
+      color: var(--neon-cyan);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1rem 0.85rem; }
+      .grid { grid-template-columns: 1fr; gap: 1rem; }
+      .filter-bar { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
 
   <canvas id="webgl-bg"></canvas>
+  
+  <div class="aurora-bg">
+    <div class="aurora-blob blob-1"></div>
+    <div class="aurora-blob blob-2"></div>
+  </div>
 
   <div class="container">
     <div class="header">
+      <div class="header-pill">
+        <div class="dot"></div>
+        Sairam Academic Operating System
+      </div>
       <h1>Student Hub</h1>
-      <p>Quick access to Sairam learning & academic portals</p>
+      <p>Direct spatial gateway to academic records, AI platforms, developer hubs, and learning portals.</p>
     </div>
 
     <div class="controls-wrapper">
-      <div class="search-box-container">
-        <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder=">_ Search platforms..." onkeyup="filterCards()">
+      <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" aria-label="Search portals" placeholder="Search platforms, portals, services..." onkeyup="filterCards()">
       </div>
 
-      <!-- Category Filter Chips -->
       <div class="filter-bar" id="filterBar">
-        <button class="chip active" onclick="setCategory('ALL', this)">All</button>
+        <button class="chip active" onclick="setCategory('ALL', this)">All Platforms</button>
         <button class="chip" onclick="setCategory('Academics', this)">Academics</button>
         <button class="chip" onclick="setCategory('Skill & Coding', this)">Coding</button>
-        <button class="chip" onclick="setCategory('Government', this)">Govt</button>
         <button class="chip" onclick="setCategory('Learning', this)">Learning</button>
+        <button class="chip" onclick="setCategory('Government', this)">Govt</button>
+        <button class="chip" onclick="setCategory('Entrepreneurship', this)">Startups</button>
       </div>
     </div>
 
     <div class="grid" id="portalGrid">
 
       <a href="https://edumate.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="EDUMATE Sri Sairam Engineering College SEC">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Edumate">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="Edumate">
+            </div>
           </div>
-          <h3>Edumate Portal🪪</h3>
+          <h3>Edumate Portal 🪪</h3>
           <p>SEC Edumate login for academic tracking, attendance, and internal marks.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a> 
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
+      </a>
 
       <a href="https://web.nen.wfglobal.org/" target="_blank" class="card" data-category="Entrepreneurship" data-title="NEN Wadhwani Foundation Entrepreneurship Network">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Entrepreneurship</span>
-            <img src="https://www.google.com/s2/favicons?domain=nen.wfglobal.org&sz=64" class="card-icon" alt="NEN WFGlobal">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Entrepreneurship</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=nen.wfglobal.org&sz=64" alt="NEN WFGlobal">
+            </div>
           </div>
           <h3>Wadhwani Portal 🚀</h3>
           <p>Wadhwani Foundation National Entrepreneurship Network platform for startup support.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://sairam.edu.in" target="_blank" class="card" data-category="Academics" data-title="Sri Sairam Engineering College SEC Main Site">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SEC">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="SEC">
+            </div>
           </div>
-          <h3>SEC Main Site🏢</h3>
+          <h3>SEC Main Site 🏢</h3>
           <p>Official Sri Sairam Engineering College institutional portal and updates.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
-      </a> 
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
+      </a>
 
       <a href="https://pgpa.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="Sairam PGPA Portal Grievance Parent Student Academics SEC">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="Sairam PGPA">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="Sairam PGPA">
+            </div>
           </div>
-          <h3>Sairam PGPA Portal👾</h3>
+          <h3>Sairam PGPA Portal 👾</h3>
           <p>Official Sairam Grievance Redressal Portal for student and parent feedback.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://sailstudent.sairamit.edu.in/" target="_blank" class="card" data-category="Academics" data-title="AI Powered Learning Sairam SAIL Student Portal Login Edwisely">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL AI">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="SAIL AI">
+            </div>
           </div>
-          <h3>SAIL AI (Student)🕵️‍♀️</h3>
+          <h3>SAIL AI (Student) 🕵️‍♀️</h3>
           <p>Sairam AI-driven personalized learning platform for assessments and analytics.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://project.sairamtap.edu.in/" target="_blank" class="card" data-category="Academics" data-title="Sairam project Login">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="sairamproject">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="sairamproject">
+            </div>
           </div>
-          <h3>Sairam Project🤖</h3>
+          <h3>Sairam Project 🤖</h3>
           <p>Student project portal for tracking progress, submissions, and reviews.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://sailmentor.sairam.edu.in/" target="_blank" class="card" data-category="Academics" data-title="SAIL Mentor Sairam AI Powered Learning Faculty Login">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" class="card-icon" alt="SAIL Mentor">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=sairam.edu.in&sz=64" alt="SAIL Mentor">
+            </div>
           </div>
           <h3>SAIL AI (Mentor)</h3>
           <p>Faculty portal for AI-powered student coaching and curriculum management.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://classroom.google.com" target="_blank" class="card" data-category="Academics" data-title="Google Classroom Learning Academics">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Academics</span>
-            <img src="https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64" class="card-icon" alt="Classroom">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Academics</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64" alt="Classroom">
+            </div>
           </div>
           <h3>Google Classroom</h3>
           <p>Access virtual classes, track course materials, and submit assignments.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://www.skillrack.com" target="_blank" class="card" data-category="Skill & Coding" data-title="skillrack.com programming coding">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Skill & Coding</span>
-            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="SkillRack">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Skill & Coding</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" alt="SkillRack">
+            </div>
           </div>
           <h3>SkillRack</h3>
           <p>Programming practice portal for daily coding challenges and assessments.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://skillrack.gururaja.in/" target="_blank" class="card" data-category="Skill & Coding" data-title="SkillRack Tracker profile stats">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Skill & Coding</span>
-            <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" class="card-icon" alt="Tracker">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Skill & Coding</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=skillrack.com&sz=64" alt="Tracker">
+            </div>
           </div>
           <h3>SkillRack Tracker</h3>
           <p>Direct dashboard access to review coding progress, rank, and solves.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://in.linkedin.com" target="_blank" class="card" data-category="Professional" data-title="LinkedIn India">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Professional</span>
-            <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" class="card-icon" alt="LinkedIn">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Professional</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" alt="LinkedIn">
+            </div>
           </div>
           <h3>LinkedIn 💼</h3>
           <p>Manage your professional identity. Build and engage with your professional network.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://swayam.gov.in" target="_blank" class="card" data-category="Learning" data-title="Swayam Central NPTEL Courses">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Learning</span>
-            <img src="https://www.google.com/s2/favicons?domain=swayam.gov.in&sz=64" class="card-icon" alt="Swayam">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Learning</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=swayam.gov.in&sz=64" alt="Swayam">
+            </div>
           </div>
           <h3>Swayam Central</h3>
           <p>Government portal for NPTEL certifications and online higher education courses.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://www.coursera.org" target="_blank" class="card" data-category="Learning" data-title="Coursera online learning degrees">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Learning</span>
-            <img src="https://www.google.com/s2/favicons?domain=coursera.org&sz=64" class="card-icon" alt="Coursera">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Learning</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=coursera.org&sz=64" alt="Coursera">
+            </div>
           </div>
           <h3>Coursera</h3>
           <p>Global e-learning platform offering professional certificates and specialization tracks.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://accounts.digitallocker.gov.in/signin/oauth_partner/%2Foauth2%2F1%2Fauthorize" target="_blank" class="card" data-category="Government" data-title="DigiLocker Government Digital Documents">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=digitallocker.gov.in&sz=64" class="card-icon" alt="DigiLocker">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Government</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=digitallocker.gov.in&sz=64" alt="DigiLocker">
+            </div>
           </div>
           <h3>DigiLocker</h3>
           <p>Official cloud platform for secure storage and verification of academic documents.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://mybharat.gov.in" target="_blank" class="card" data-category="Government" data-title="Home MYBharat youth portal my bharath">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=mybharat.gov.in&sz=64" class="card-icon" alt="MYBharat">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Government</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=mybharat.gov.in&sz=64" alt="MYBharat">
+            </div>
           </div>
           <h3>MYBharat Portal</h3>
           <p>National initiative for youth empowerment, skill development, and volunteering.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://www.mygov.in" target="_blank" class="card" data-category="Government" data-title="MyGov.in Citizen Engagement Governance my government">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Government</span>
-            <img src="https://www.google.com/s2/favicons?domain=mygov.in&sz=64" class="card-icon" alt="MyGov">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Government</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=mygov.in&sz=64" alt="MyGov">
+            </div>
           </div>
           <h3>MyGov.in</h3>
           <p>Citizen participation platform for national governance and hackathons.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
       <a href="https://fitindia.gov.in" target="_blank" class="card" data-category="Fitness" data-title="Fit India Movement">
-        <div class="card-glare"></div>
-        <div class="card-content">
-          <div class="card-top">
-            <span class="tag">Fitness</span>
-            <img src="https://www.google.com/s2/favicons?domain=fitindia.gov.in&sz=64" class="card-icon" alt="Fit India">
+        <div class="card-spotlight"></div>
+        <div class="card-body">
+          <div class="card-header-row">
+            <span class="tag-pill">Fitness</span>
+            <div class="card-icon-frame">
+              <img src="https://www.google.com/s2/favicons?domain=fitindia.gov.in&sz=64" alt="Fit India">
+            </div>
           </div>
           <h3>Fit India 🏃</h3>
           <p>Official portal for the Fit India Movement to encourage a healthy active lifestyle.</p>
         </div>
-        <div class="card-action">Launch <span>&rarr;</span></div>
+        <div class="card-footer-row">Launch <span>&rarr;</span></div>
       </a>
 
     </div>
   </div>
 
   <footer class="footer">
-    <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-badge">
-      Developed by <strong>BALAJI P</strong> | Cybersecurity Student
+    <a href="https://balaji-virid.vercel.app/" target="_blank" rel="noopener noreferrer" class="developer-pill">
+      Engineered by <strong>BALAJI P</strong> | Cybersecurity Student
     </a>
   </footer>
 
   <script>
-    /* --- Mobile Detect & Haptics --- */
     const isMobile = window.innerWidth < 768;
-    
+
     function triggerHaptic() {
       if ('vibrate' in navigator) navigator.vibrate(12);
     }
 
-    /* --- Combined Search & Category Filter Logic --- */
+    /* Filter & Search Logic */
     let currentCategory = 'ALL';
 
     function setCategory(cat, el) {
@@ -620,117 +751,73 @@
       });
     }
 
-    /* --- Dynamic 3D Interaction --- */
+    /* Dynamic Spatial Mouse Tracking */
     document.querySelectorAll('.card').forEach(card => {
-      let reqId = null;
-
       card.addEventListener('click', () => triggerHaptic());
 
-      if (!isMobile) {
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+
+        if (!isMobile) {
           const centerX = rect.width / 2;
           const centerY = rect.height / 2;
-          
           const rotateX = ((y - centerY) / centerY) * -10;
           const rotateY = ((x - centerX) / centerX) * 10;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        }
+      });
 
-          card.style.setProperty('--mouse-x', `${x}px`);
-          card.style.setProperty('--mouse-y', `${y}px`);
-
-          if (reqId) cancelAnimationFrame(reqId);
-          reqId = requestAnimationFrame(() => {
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(6px)`;
-          });
-        });
-
-        card.addEventListener('mouseleave', () => {
-          if (reqId) cancelAnimationFrame(reqId);
-          card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
-        });
-      }
+      card.addEventListener('mouseleave', () => {
+        if (!isMobile) {
+          card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+        }
+      });
     });
 
-    /* --- Three.js Mobile-Optimized Background Engine --- */
+    /* Three.js Spatial Particles Canvas */
     const canvas = document.getElementById('webgl-bg');
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = isMobile ? 42 : 32;
+    camera.position.z = isMobile ? 30 : 25;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: !isMobile });
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const nodeCount = isMobile ? 30 : 75;
-    const maxDistance = isMobile ? 11 : 14;
-    const nodePositions = new Float32Array(nodeCount * 3);
-    const nodeVelocities = [];
+    /* Cybernetic Field */
+    const count = isMobile ? 60 : 140;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(count * 3);
 
-    for (let i = 0; i < nodeCount; i++) {
-      nodePositions[i * 3] = (Math.random() - 0.5) * (isMobile ? 50 : 70);
-      nodePositions[i * 3 + 1] = (Math.random() - 0.5) * (isMobile ? 50 : 70);
-      nodePositions[i * 3 + 2] = (Math.random() - 0.5) * 40;
-
-      nodeVelocities.push({
-        x: (Math.random() - 0.5) * 0.03,
-        y: (Math.random() - 0.5) * 0.03,
-        z: (Math.random() - 0.5) * 0.03
-      });
+    for (let i = 0; i < count * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 50;
+      positions[i + 1] = (Math.random() - 0.5) * 50;
+      positions[i + 2] = (Math.random() - 0.5) * 30;
     }
 
-    const nodeGeo = new THREE.BufferGeometry();
-    nodeGeo.setAttribute('position', new THREE.BufferAttribute(nodePositions, 3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    const nodeMat = new THREE.PointsMaterial({
-      color: 0x10b981,
-      size: isMobile ? 0.6 : 0.5,
+    const material = new THREE.PointsMaterial({
+      color: 0x00f0ff,
+      size: isMobile ? 0.4 : 0.35,
       transparent: true,
-      opacity: 0.75
+      opacity: 0.6
     });
 
-    const plexusNodes = new THREE.Points(nodeGeo, nodeMat);
-    scene.add(plexusNodes);
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
 
-    const linesGeo = new THREE.BufferGeometry();
-    const linesMat = new THREE.LineBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.2,
-      blending: THREE.AdditiveBlending
-    });
-    const linesMesh = new THREE.LineSegments(linesGeo, linesMat);
-    scene.add(linesMesh);
-
-    function createCyberShield() {
-      const shieldGroup = new THREE.Group();
-      const outerGeo = new THREE.IcosahedronGeometry(isMobile ? 3.8 : 5.5, 1);
-      const outerMat = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.2 });
-      shieldGroup.add(new THREE.Mesh(outerGeo, outerMat));
-
-      const coreGeo = new THREE.OctahedronGeometry(isMobile ? 1.8 : 2.8, 0);
-      const coreMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.6 });
-      const core = new THREE.Mesh(coreGeo, coreMat);
-      shieldGroup.add(core);
-
-      return { group: shieldGroup, core };
-    }
-
-    const cyberShield = createCyberShield();
-    cyberShield.group.position.set(isMobile ? 0 : -22, isMobile ? 18 : 8, -15);
-    scene.add(cyberShield.group);
-
-    let targetMouseX = 0, targetMouseY = 0;
-    let currentMouseX = 0, currentMouseY = 0;
-
-    window.addEventListener(isMobile ? 'touchmove' : 'mousemove', (e) => {
-      const x = e.touches ? e.touches[0].clientX : e.clientX;
-      const y = e.touches ? e.touches[0].clientY : e.clientY;
-      targetMouseX = (x / window.innerWidth - 0.5) * 2;
-      targetMouseY = (y / window.innerHeight - 0.5) * 2;
+    /* Smooth Parallax Follow */
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
     });
 
     window.addEventListener('resize', () => {
@@ -745,43 +832,11 @@
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      currentMouseX += (targetMouseX - currentMouseX) * 0.04;
-      currentMouseY += (targetMouseY - currentMouseY) * 0.04;
+      particles.rotation.y = elapsedTime * 0.04;
+      particles.rotation.x = elapsedTime * 0.02;
 
-      const posAttr = nodeGeo.attributes.position;
-      const linePositions = [];
-
-      for (let i = 0; i < nodeCount; i++) {
-        posAttr.setX(i, posAttr.getX(i) + nodeVelocities[i].x);
-        posAttr.setY(i, posAttr.getY(i) + nodeVelocities[i].y);
-        posAttr.setZ(i, posAttr.getZ(i) + nodeVelocities[i].z);
-
-        if (Math.abs(posAttr.getX(i)) > 30) nodeVelocities[i].x *= -1;
-        if (Math.abs(posAttr.getY(i)) > 30) nodeVelocities[i].y *= -1;
-        if (Math.abs(posAttr.getZ(i)) > 20) nodeVelocities[i].z *= -1;
-
-        for (let j = i + 1; j < nodeCount; j++) {
-          const dx = posAttr.getX(i) - posAttr.getX(j);
-          const dy = posAttr.getY(i) - posAttr.getY(j);
-          const dz = posAttr.getZ(i) - posAttr.getZ(j);
-          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-          if (dist < maxDistance) {
-            linePositions.push(
-              posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i),
-              posAttr.getX(j), posAttr.getY(j), posAttr.getZ(j)
-            );
-          }
-        }
-      }
-      posAttr.needsUpdate = true;
-      linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
-
-      cyberShield.group.rotation.y = elapsedTime * 0.2;
-      cyberShield.core.rotation.x = elapsedTime * 0.4;
-
-      camera.position.x = currentMouseX * 2;
-      camera.position.y = -currentMouseY * 2;
+      camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
       camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
